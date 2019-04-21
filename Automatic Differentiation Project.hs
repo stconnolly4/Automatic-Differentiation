@@ -12,5 +12,5 @@ import Control.Monad hiding (join) -- used in testing infrastructure
 import Control.Exception           -- used in testing infrastructure
 import System.IO                   -- used in testing infrastructure
 
-data Value = IntV Integer
+data Value = RealV Integer
   deriving (Eq,Ord,Show)

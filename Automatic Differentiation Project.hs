@@ -12,5 +12,9 @@ import Control.Monad hiding (join) -- used in testing infrastructure
 import Control.Exception           -- used in testing infrastructure
 import System.IO                   -- used in testing infrastructure
 
-data Value = RealV Integer
+data Value = IntV Integer
   deriving (Eq,Ord,Show)
+
+data Derivative = IntD Integer
+  deriving (Eq,Ord,Show)
+--git test

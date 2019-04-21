@@ -12,9 +12,9 @@ import Control.Monad hiding (join) -- used in testing infrastructure
 import Control.Exception           -- used in testing infrastructure
 import System.IO                   -- used in testing infrastructure
 
-data Value = IntV Integer
+data Value = FloatV Float
   deriving (Eq,Ord,Show)
 
-data Derivative = IntD Integer
+data Derivative = FloatD Float
   deriving (Eq,Ord,Show)
 --git test

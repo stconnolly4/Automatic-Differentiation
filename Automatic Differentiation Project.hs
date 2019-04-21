@@ -17,4 +17,7 @@ data Value = FloatV Float
 
 data Derivative = FloatD Float
   deriving (Eq,Ord,Show)
---git test
+
+data ValueHat = Value Derivative
+
+type EnvHat = Map String ValueHat

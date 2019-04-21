@@ -21,3 +21,11 @@ data Derivative = FloatD Float
 data ValueHat = Value Derivative
 
 type EnvHat = Map String ValueHat
+
+data Expr = IntE Integer
+          | PlusE Expr Expr
+          | BoolE Bool
+          | IfE Expr Expr Expr
+          | VarE String
+          | LetE String Expr Expr
+  deriving (Eq,Ord,Show)

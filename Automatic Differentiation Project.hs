@@ -18,14 +18,15 @@ data Value = FloatV Float
 data Derivative = FloatD Float
   deriving (Eq,Ord,Show)
 
-data ValueHat = Value Derivative
+data ValueHat = VHat Value Derivative
 
 type EnvHat = Map String ValueHat
 
 data Expr = IntE Integer
           | PlusE Expr Expr
-          | BoolE Bool
-          | IfE Expr Expr Expr
+          | TimesE Expr Expr
           | VarE String
           | LetE String Expr Expr
   deriving (Eq,Ord,Show)
+
+differentiate EnvHat -> Expr -> ValueHat

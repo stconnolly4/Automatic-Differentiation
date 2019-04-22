@@ -31,6 +31,7 @@ data Derivative = FloatD Float
   deriving (Eq,Ord,Show)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 -- γ^ ∈ env^ ≜ var ⇀ value^
 type Env = Map String Value'
 =======
@@ -38,3 +39,17 @@ data ValueHat = Value Derivative
 
 type EnvHat = Map String ValueHat
 >>>>>>> b18dc6c9663696441771a691ed0bb91316687552
+=======
+data ValueHat = VHat Value Derivative
+
+type EnvHat = Map String ValueHat
+
+data Expr = IntE Integer
+          | PlusE Expr Expr
+          | TimesE Expr Expr
+          | VarE String
+          | LetE String Expr Expr
+  deriving (Eq,Ord,Show)
+
+differentiate EnvHat -> Expr -> ValueHat
+>>>>>>> eec978caa615b5602219232ed1903f59dc0381df

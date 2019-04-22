@@ -19,6 +19,9 @@ data Value = Value Float
 data Derivative = FloatD Float
   deriving (Eq,Ord,Show)
 
+
+type Env = Map String Value'
+=======
 data ValueHat = VHat Value Derivative
   deriving (Eq,Ord,Show)
 
@@ -45,3 +48,4 @@ differentiate env e = case e of
       Nothing -> Nothing
     Nothing -> Nothing
   _ -> Nothing
+>>>>>>> f41f57c629cd30c9dde26b4f48a3c89c219ac8ea

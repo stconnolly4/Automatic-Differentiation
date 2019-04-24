@@ -49,7 +49,7 @@ differentiate env e = case e of
       Just (VHat (ValueD e2v) (DerivativeD e2d)) -> Just (VHat (ValueD (e1v * e2v)) (DerivativeD ((e1d * e2v) + (e1v * e2d))))
       Nothing -> Nothing
     Nothing -> Nothing
-  -- SinE e1 -> case differentiate env e1 of
-  --   Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD SinE e1) (DoubleD (e1d * CosE e1))
-  --   Nothing -> Nothing
+  SinE e1 -> case differentiate env e1 of
+    Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (sin e1v)) (DerivativeD (e1d * (cos e1v))))
+    Nothing -> Nothing
   _ -> Nothing

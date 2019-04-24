@@ -50,3 +50,6 @@ differentiate env e = case e of
       Nothing -> Nothing
     Nothing -> Nothing
   _ -> Nothing
+  SinE e1 -> case differentiate env e1 of
+    Just (VHat e1v e1d) -> Just (VHat (Value SinE e1) (DoubleD (e1d * CosE e1))
+    Nothing -> Nothing

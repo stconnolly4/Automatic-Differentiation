@@ -55,3 +55,12 @@ differentiate env e = case e of
   CosE e1 -> case differentiate env e1 of
     Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (cos e1v)) (DerivativeD (-e1d * (sin e1v))))
     Nothing -> Nothing
+
+  differentiateTests :: (Int,String,EnvHat,Expr -> Maybe ValueHat,[(EnvHat,Expr,Maybe ValueHat)])
+  differentiateTests =
+    ( 1
+    , "differentiate"
+    , differentiate
+    , [(Map.empty,DoubleE 5, ValueHat (ValueV 5) (ValueD 0))
+      ]
+    )

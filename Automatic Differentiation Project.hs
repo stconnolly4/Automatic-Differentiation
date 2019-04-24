@@ -37,7 +37,7 @@ differentiate env e = case e of
   DoubleE f -> Just (VHat (ValueD f) (DerivativeD 0))
   VarE v -> case v of
     Var s -> case Map.lookup s env of
-      Just (VHat v1 d1) -> Just (VHat v1 (DerivativeD 1))
+      Just (VHat v1 d1) -> Just (VHat v1 d1)
       Nothing -> Just (VHat (ValueD 0) (DerivativeD 0))
   PlusE e1 e2 -> case differentiate env e1 of
     Just (VHat (ValueD e1v) (DerivativeD e1d)) -> case differentiate env e2 of

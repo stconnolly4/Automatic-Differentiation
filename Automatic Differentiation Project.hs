@@ -49,31 +49,7 @@ differentiate env e = case e of
       Just (VHat e2v e2d) -> Just (VHat (Value e1v * e2v) (DoubleD e1d * e2v + e1v * e2d))
       Nothing -> Nothing
     Nothing -> Nothing
---  SinE e1 -> case differentiate env e1 of
-  --  Just (VHat e1v e1d) -> Just (VHat (Value SinE e1) (DoubleD (e1d * CosE e1))
---    Nothing -> Nothing
+  -- SinE e1 -> case differentiate env e1 of
+  --   Just (VHat e1v e1d) -> Just (VHat (Value SinE e1) (DoubleD (e1d * CosE e1))
+  --   Nothing -> Nothing
   _ -> Nothing
-
--- differentiateTests :: (Int,EnvHat,Expr,Maybe ValueHat -> String,[(Int,String)])
--- differentiateTests =
---   ( 1
---   , "differentiate"
---   , differentiate
---   , [(Map.empty, DoubleE 1, VHat ((Value 1.0) (Derivative 0)))
---     ]
---   )
---
---
--- runTestsN :: (Eq a,Show a) => Int -> String -> [(String,() -> a,a)] -> IO (Int,Int,Int)
--- runTestsN n name tests = do
---   putStrLn $ ">> E" ++ show n ++ " Tests: " ++ name
---   (passed,failed) <- foldMOn (0,0) tests $ \ pf (s,fx,y) -> do
---     y'M <- catch (Right <$> evaluate (fx ())) $ \ (SomeException e) -> return $ Left $ chomp $ unwords $ lines $ show e
---     showTestResult s y y'M pf
---   return (n,passed,failed)
---   where
---     chomp s0 = concat $ mapOn (group s0) $ \ s ->
---       if " " `isPrefixOf` s then " " else s
---
--- runTests1 :: (Eq b,Show a,Show b) => (Int,String,a -> b,[(a,b)]) -> IO (Int,Int,Int)
--- runTests1 (n,name,f,tests) = runTestsN n name $ mapOn tests $ \ (x,y) -> (name ++ " " ++ show x,\() -> f x,y)

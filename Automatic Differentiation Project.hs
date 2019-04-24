@@ -13,10 +13,10 @@ import System.IO                   -- used in testing infrastructure
 data Variable = Var String
   deriving (Eq,Ord,Show)
 
-data Value = Value Float
+data Value = Value Double
   deriving (Eq, Ord, Show)
 
-data Derivative = FloatD Float
+data Derivative = DoubleD Double
   deriving (Eq,Ord,Show)
 
 data ValueHat = VHat Value Derivative
@@ -25,7 +25,7 @@ data ValueHat = VHat Value Derivative
 type EnvHat = Map String ValueHat
 
 data Expr = VarE Variable
-          | FloatE Float
+          | DoubleE Double
           | PlusE Expr Expr
           | TimesE Expr Expr
           | SinE Expr
@@ -34,14 +34,22 @@ data Expr = VarE Variable
 
 differentiate :: EnvHat -> Expr -> Maybe ValueHat
 differentiate env e = case e of
-  FloatE f -> Just (VHat (Value f) (FloatD 0))
+  DoubleE f -> Just (VHat (Value f) (DoubleD 0))
   VarE v -> case v of
     Var s -> case Map.lookup s env of
-      Just (VHat v1 d1) -> Just (VHat (Value 1) (FloatD 1))
-      Nothing -> Just (VHat (Value 0) (FloatD 0))
+      Just (VHat v1 d1) -> Just (VHat (Value 1) (DoubleD 1))
+      Nothing -> Just (VHat (Value 0) (DoubleD 0))
   PlusE e1 e2 -> case differentiate env e1 of
     Just (VHat e1v e1d) -> case differentiate env e2 of
-      Just (VHat e2v e2d) -> Just (VHat (Value e1v + e2v) (FloatD e1d + e2d))
+      Just (VHat e2v e2d) -> Just (VHat (Value e1v + e2v) (DoubleD e1d + e2d))
+      Nothing -> Nothing
+    Nothing -> Nothing
+  TimesE e1 e2 -> case differentiate env e1 of
+    Just (VHat e1v e1d) -> case differentiate env e2 of
+      Just (VHat e2v e2d) -> Just (VHat (Value e1v * e2v) (DoubleD e1d * e2v + e1v * e2d))
       Nothing -> Nothing
     Nothing -> Nothing
   _ -> Nothing
+  SinE e1 -> case differentiate env e1 of
+    Just (VHat e1v e1d) -> Just (VHat (Value SinE e1) (DoubleD (e1d * CosE e1))
+    Nothing -> Nothing

@@ -24,11 +24,13 @@ data ValueHat = VHat Value Derivative
 
 type EnvHat = Map String ValueHat
 
-data Expr = VarE Variable
-          | DoubleE Double
-          | PlusE Expr Expr
-          | TimesE Expr Expr
+data Expr = DoubleE Double
           | SinE Expr
-          | CosE Expr
-          | LetE String Expr Expr
   deriving (Eq,Ord,Show)
+
+--calculateDerivative :: EnvHat -> Derivative -> Derivative
+
+differentiate :: EnvHat -> Expr -> Derivative -> ValueHat
+differentiate env e d = case (e, d) of
+  (SinE e1, DerivativeD d1) -> differentiate env e1 (DerivativeD (cos d1))
+  (DoubleE e1, _) -> VHat (ValueD e1) d

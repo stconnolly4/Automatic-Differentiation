@@ -30,6 +30,7 @@ data Expr = VarE Variable
           | TimesE Expr Expr
           | SinE Expr
           | CosE Expr
+          | LetE String Expr Expr
   deriving (Eq,Ord,Show)
 
 differentiate :: EnvHat -> Expr -> Maybe ValueHat
@@ -53,6 +54,11 @@ differentiate env e = case e of
   CosE e1 -> case differentiate env e1 of
     Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (cos e1v)) (DerivativeD (-e1d * (sin e1v))))
     Nothing -> Nothing
+  LetE x e1 e2 -> case differentiate env e1 of
+    Just (vh) -> differentiate (Map.insert x vh env) e2
+    Nothing -> Nothing
+
+
 
 differentiateTests :: (Int,String,(EnvHat -> Expr -> Maybe ValueHat),[((EnvHat,Expr),Maybe ValueHat)])
 differentiateTests =
@@ -62,9 +68,23 @@ differentiateTests =
   , [(  (Map.empty,DoubleE 5),
         Just (VHat (ValueD 5) (DerivativeD 0))
      )
-     -- (  input,
-     --    output
-     -- )
+     ,
+     (  ((Map.fromList [("x", VHat (ValueD 1) (DerivativeD 1)), ("y", VHat (ValueD 2) (DerivativeD 0))]),(PlusE (TimesE (DoubleE 17.2) (VarE (Var "x"))) (DoubleE 7))),
+           Just (VHat (ValueD 24.2) (DerivativeD 17.2))
+      )
+      ,
+      ( ((Map.fromList [("x", VHat (ValueD 9) (DerivativeD 1)), ("y", VHat (ValueD 2) (DerivativeD 0))]), (PlusE (TimesE (DoubleE 17.2) (VarE (Var "x"))) (DoubleE 7))),
+            Just (VHat (ValueD 161.79999999999998) (DerivativeD 17.2))
+      )
+      ,
+      ( ((Map.fromList [("x", VHat (ValueD 10) (DerivativeD 1)), ("y", VHat (ValueD 20) (DerivativeD 0))]), (SinE (TimesE (VarE (Var "x")) (VarE (Var "y"))))),
+            Just (VHat (ValueD (-0.8732972972139945)) (DerivativeD 9.74375350014012))
+      )
+      ,
+      ( (Map.empty, (LetE "x" (DoubleE 7) (PlusE (DoubleE 5) (VarE ( Var "x"))))),
+            Just (VHat (ValueD (12)) (DerivativeD 0))
+
+      )
     ]
   )
 

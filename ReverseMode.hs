@@ -16,7 +16,7 @@ data Variable = Var String
 data Value = ValueD Double
   deriving (Eq, Ord, Show)
 
-data Derivative = DerivativeD Double
+data Derivative = DerivativeD (Double -> Double)
   deriving (Eq,Ord,Show)
 
 data ValueHat = VHat Value Derivative
@@ -30,7 +30,7 @@ data Expr = DoubleE Double
 
 --calculateDerivative :: EnvHat -> Derivative -> Derivative
 
-differentiate :: EnvHat -> Expr -> Derivative -> ValueHat
+differentiate :: EnvHat -> Expr -> ValueHat -- we should be producing a value wihtout needing parents derivative, and then we\
 differentiate env e d = case (e, d) of
   (SinE e1, DerivativeD d1) -> differentiate env e1 (DerivativeD (cos d1))
   (DoubleE e1, _) -> VHat (ValueD e1) d

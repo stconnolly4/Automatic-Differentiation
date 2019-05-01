@@ -21,7 +21,6 @@ data Derivative = DerivativeD (Double -> Double)
 data FMDerivative = FMDerivativeD Double
   deriving (Eq,Ord,Show)
 
-
 data ValueHat = VHat Value Derivative
 
 data FMValueHat = FMVHat Value FMDerivative
@@ -32,12 +31,13 @@ type EnvHat = Map String ValueHat
 data Expr = DoubleE Double
           | VarE Variable
           | SinE Expr
+          | CosE Expr
   deriving (Eq,Ord,Show)
 
-drive :: Maybe ValueHat -> FMValueHat
+drive :: Maybe ValueHat -> Maybe FMValueHat
 drive mvh = case mvh of
-  Just (VHat v (DerivativeD f)) -> FMVHat v (FMDerivativeD (f 1))
-  Nothing -> FMVHat (ValueD 1) (FMDerivativeD 1)
+  Just (VHat v (DerivativeD f)) -> Just (FMVHat v (FMDerivativeD (f 1)))
+  Nothing -> Nothing
 
 --Use forward and instead of getting parent derivative use function in that place to send to child
 
@@ -47,15 +47,48 @@ differentiate env e = case e of
   VarE v -> case v of
     Var s -> Map.lookup s env
   SinE e1 -> case differentiate env e1 of
-    Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (sin e1v)) (DerivativeD (\d -> -d * sin(e1v))))
+    Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (sin e1v)) (DerivativeD (\d -> d * cos(e1v))))
     Nothing -> Nothing
+  CosE e1 -> case differentiate env e1 of
+    Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (cos e1v)) (DerivativeD (\d -> -d * sin(e1v))))
+    Nothing -> Nothing
+
+
+--- manual test cases (run in Terminal) ---
+
+--- drive (differentiate Map.empty (DoubleE 7))
+--- FMVHat (ValueD 7.0) (FMDerivativeD 0.0)
+
+--- drive (differentiate Map.empty (SinE (DoubleE 7)))
+--- FMVHat (ValueD 0.6569865987187891) (FMDerivativeD 0.7539022543433046)
+
+--- drive (differentiate (Map.fromList [("x", VHat (ValueD 1) (DerivativeD (\x->0)))]) (DoubleE 7))
+--- FMVHat (ValueD 7.0) (FMDerivativeD 0.0)
+
+--- drive (differentiate (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (VarE (Var "x")))
+--- FMVHat (ValueD 7.0) (FMDerivativeD 0.0)
+
+--- drive (differentiate (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (VarE (Var "y")))
+--- Nothing
+
+--- drive (differentiate Map.empty (CosE (DoubleE 7)))
+--- Just (FMVHat (ValueD 0.7539022543433046) (FMDerivativeD (-0.6569865987187891)))
+
+----THIS CASE BELOW DOESNT WORK----
+
+--- drive (differentiate (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (SinE(CosE (CosE (VarE (Var "x"))))))
+--- Just (FMVHat (ValueD 0.6661415625501989) (FMDerivativeD 0.81922759437))
+
+
+
+
 
 
 
 -- differentiateTests :: (Int,String,(EnvHat -> Expr -> Maybe ValueHat),[((EnvHat,Expr),Maybe ValueHat)])
 -- differentiateTests =
 --   ( 1
---   , "differentiate"
+--   , "drive"
 --   , drive differentiate
 --   , [(  (Map.empty,DoubleE 5),
 --         Just (VHat (ValueD 5) (FMDerivativeD 0))

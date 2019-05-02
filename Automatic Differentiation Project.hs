@@ -97,6 +97,10 @@ differentiateTests =
       ( ((Map.fromList [("x", VHat (ValueD 7) (DerivativeD (1)))]), (SinE(CosE (CosE (VarE (Var "x")))))),
             Just (VHat (ValueD 0.6661415625501989) (DerivativeD 0.33539762569423387))
       )
+      ,
+      ( ((Map.fromList [("x", VHat (ValueD 10) (DerivativeD 1)), ("y", VHat (ValueD 20) (DerivativeD 0))]), (SinE (PlusE (VarE (Var "x")) (VarE (Var "y"))))),
+            Just (VHat (ValueD (-0.9880316240928618)) (DerivativeD 0.15425144988758405))
+      )
     ]
   )
 

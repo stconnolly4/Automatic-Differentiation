@@ -32,6 +32,7 @@ data Expr = DoubleE Double
           | VarE Variable
           | SinE Expr
           | CosE Expr
+          | PlusE Expr Expr
   deriving (Eq,Ord,Show)
 
 drive :: Maybe ValueHat -> Maybe FMValueHat
@@ -52,6 +53,12 @@ differentiate env e = case e of
   CosE e1 -> case differentiate env e1 of
     Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (cos e1v)) (DerivativeD (\d -> -(e1d e1v) * sin(e1v))))
     Nothing -> Nothing
+  PlusE e1 e2 -> case differentiate env e1 of
+    Just (VHat (ValueD e1v) (DerivativeD e1d)) -> case differentiate env e2 of
+      Just (VHat (ValueD e2v) (DerivativeD e2d)) -> Just (VHat (ValueD (e1v + e2v)) (DerivativeD (\d -> (e1d d)+ (e2d d))))
+      Nothing -> Nothing
+    Nothing -> Nothing
+
 
 
 --- manual test cases (run in Terminal) ---
@@ -83,9 +90,9 @@ differentiate env e = case e of
 -- drive (differentiate (Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1)))]) (SinE (VarE (Var "x"))))
 -- Just (VHat (ValueD (-0.5440211108893699)) (DerivativeD (-0.8390715290764524)))
 
+-- drive (differentiate ((Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1))), ("y", VHat (ValueD 20) (DerivativeD (\x->0))]) (SinE (PlusE (VarE (Var "x")) (VarE (Var "y")))))
 
-
-
+-- drive (differentiate (Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1))), ("y", VHat (ValueD 20) (DerivativeD (\x->0)))]) (SinE (PlusE (VarE (Var "x")) (VarE (Var "y")))))
 
 
 

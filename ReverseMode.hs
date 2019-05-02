@@ -47,10 +47,10 @@ differentiate env e = case e of
   VarE v -> case v of
     Var s -> Map.lookup s env
   SinE e1 -> case differentiate env e1 of
-    Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (sin e1v)) (DerivativeD (\d -> d * cos(e1v))))
+    Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (sin e1v)) (DerivativeD (\d -> (e1d e1v) * cos(e1v))))
     Nothing -> Nothing
   CosE e1 -> case differentiate env e1 of
-    Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (cos e1v)) (DerivativeD (\d -> -d * sin(e1v))))
+    Just (VHat (ValueD e1v) (DerivativeD e1d)) -> Just (VHat (ValueD (cos e1v)) (DerivativeD (\d -> -(e1d e1v) * sin(e1v))))
     Nothing -> Nothing
 
 
@@ -60,7 +60,7 @@ differentiate env e = case e of
 --- FMVHat (ValueD 7.0) (FMDerivativeD 0.0)
 
 --- drive (differentiate Map.empty (SinE (DoubleE 7)))
---- FMVHat (ValueD 0.6569865987187891) (FMDerivativeD 0.7539022543433046)
+--- FMVHat (ValueD 0.6569865987187891) (FMDerivativeD 0.0)
 
 --- drive (differentiate (Map.fromList [("x", VHat (ValueD 1) (DerivativeD (\x->0)))]) (DoubleE 7))
 --- FMVHat (ValueD 7.0) (FMDerivativeD 0.0)
@@ -73,11 +73,15 @@ differentiate env e = case e of
 
 --- drive (differentiate Map.empty (CosE (DoubleE 7)))
 --- Just (FMVHat (ValueD 0.7539022543433046) (FMDerivativeD (-0.6569865987187891)))
+--- from forward: Just (VHat (ValueD 0.7539022543433046) (DerivativeD (-0.0)))
 
-----THIS CASE BELOW DOESNT WORK----
+----THESE CASES BELOW DON'T WORK----
 
 --- drive (differentiate (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (SinE(CosE (CosE (VarE (Var "x"))))))
---- Just (FMVHat (ValueD 0.6661415625501989) (FMDerivativeD 0.81922759437))
+-- Just (VHat (ValueD 0.6661415625501989) (DerivativeD 0.0))
+
+-- drive (differentiate (Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1)))]) (SinE (VarE (Var "x"))))
+-- Just (VHat (ValueD (-0.5440211108893699)) (DerivativeD (-0.8390715290764524)))
 
 
 

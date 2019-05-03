@@ -87,3 +87,6 @@ differentiate env e = case e of
 
 -- drive (Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1))), ("y", VHat (ValueD 20) (DerivativeD (\x->0)))]) (SinE (PlusE (VarE (Var "x")) (VarE (Var "y"))))
 -- Just (FMVHat (ValueD (-0.9880316240928618)) (FMDerivativeD 0.15425144988758405))
+
+-- drive (Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1))), ("y", VHat (ValueD 20) (DerivativeD (\x->0)))]) (PlusE (VarE (Var "x")) (VarE (Var "y")))
+-- Just (FMVHat (ValueD 30.0) (FMDerivativeD 1.0))

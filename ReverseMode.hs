@@ -35,10 +35,6 @@ data Expr = DoubleE Double
           | PlusE Expr Expr
   deriving (Eq,Ord,Show)
 
--- drive :: Maybe ValueHat -> Maybe FMValueHat
--- drive mvh = case mvh of
---   Just (VHat v (DerivativeD f)) -> Just (FMVHat v (FMDerivativeD (f 1)))
---   Nothing -> Nothing
 drive ::EnvHat -> Expr -> Maybe FMValueHat
 drive env e = case differentiate env e of
   Just (VHat v (DerivativeD f)) -> Just (FMVHat v (FMDerivativeD (f 1)))
@@ -74,20 +70,20 @@ differentiate env e = case e of
 --- drive (Map.fromList [("x", VHat (ValueD 1) (DerivativeD (\x->0)))]) (DoubleE 7)
 --- FMVHat (ValueD 7.0) (FMDerivativeD 0.0)
 
---- drive (differentiate (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (VarE (Var "x")))
+--- drive (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (VarE (Var "x"))
 --- FMVHat (ValueD 7.0) (FMDerivativeD 0.0)
 
---- drive (differentiate (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (VarE (Var "y")))
+--- drive (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (VarE (Var "y"))
 --- Nothing
 
---- drive (differentiate Map.empty (CosE (DoubleE 7)))
+--- drive Map.empty (CosE (DoubleE 7))
 --- Just (VHat (ValueD 0.7539022543433046) (DerivativeD (-0.0)))
 
---- drive (differentiate (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (SinE(CosE (CosE (VarE (Var "x"))))))
+--- drive (Map.fromList [("x", VHat (ValueD 7) (DerivativeD (\x->0)))]) (SinE(CosE (CosE (VarE (Var "x")))))
 -- Just (VHat (ValueD 0.6661415625501989) (DerivativeD 0.0))
 
--- drive (differentiate (Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1)))]) (SinE (VarE (Var "x"))))
+-- drive (Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1)))]) (SinE (VarE (Var "x")))
 -- Just (VHat (ValueD (-0.5440211108893699)) (DerivativeD (-0.8390715290764524)))
 
--- drive (differentiate (Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1))), ("y", VHat (ValueD 20) (DerivativeD (\x->0)))]) (SinE (PlusE (VarE (Var "x")) (VarE (Var "y")))))
+-- drive (Map.fromList [("x", VHat (ValueD 10) (DerivativeD (\x->1))), ("y", VHat (ValueD 20) (DerivativeD (\x->0)))]) (SinE (PlusE (VarE (Var "x")) (VarE (Var "y"))))
 -- Just (FMVHat (ValueD (-0.9880316240928618)) (FMDerivativeD 0.15425144988758405))
